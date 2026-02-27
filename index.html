@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRUSHIK | Digital Craftsman</title>
+
+    <link
+        href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&f[]=clash-display@400,500,600,700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #fdfbf7;
+            --text: #1a1a1a;
+            --accent: #FF4D00;
+        }
+
+        /* Smooth Scroll Setup */
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Satoshi', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            cursor: none;
+        }
+
+        h1,
+        h2,
+        h3,
+        .display-font {
+            font-family: 'Clash Display', sans-serif;
+        }
+
+        /* --- NAVBAR STYLES (PILL SHAPE ANIMATION) --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 50;
+            padding: 20px 40px;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-radius: 0;
+        }
+
+        nav.scrolled {
+            top: 20px;
+            width: 90%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 50px;
+            padding: 12px 30px !important;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- LOADER (NEW BAAP LEVEL 3D ATOM LOADER) --- */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .atom-spinner {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            perspective: 800px;
+        }
+
+        .orbit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--accent);
+            border-right: 3px solid var(--text);
+        }
+
+        .orbit:nth-child(1) {
+            animation: spinOrbit1 2s linear infinite;
+        }
+
+        .orbit:nth-child(2) {
+            animation: spinOrbit2 2.5s linear infinite;
+        }
+
+        .orbit:nth-child(3) {
+            animation: spinOrbit3 3s linear infinite;
+        }
+
+        @keyframes spinOrbit1 {
+            0% {
+                transform: rotateX(60deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(60deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        @keyframes spinOrbit2 {
+            0% {
+                transform: rotateX(120deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(120deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        @keyframes spinOrbit3 {
+            0% {
+                transform: rotateX(0deg) rotateY(60deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(0deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        .counter {
+            position: absolute;
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: var(--text);
+            z-index: 10;
+        }
+
+        .loading-text {
+            margin-top: 60px;
+            font-family: 'Satoshi', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.4em;
+            color: var(--text);
+            text-transform: uppercase;
+            animation: pulseText 1.5s infinite;
+        }
+
+        @keyframes pulseText {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+                color: var(--accent);
+            }
+        }
+
+        /* --- 3D TILT CARDS --- */
+        .tilt-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: transform 0.1s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .tilt-content {
+            transform: translateZ(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tilt-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            transition: 0.3s;
+            transform: translateZ(30px);
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        /* --- HORIZONTAL SCROLL STYLES --- */
+        .work-section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .work-container {
+            display: flex;
+            gap: 4rem;
+            padding-left: 5vw;
+            padding-right: 5vw;
+            width: max-content;
+            align-items: center;
+        }
+
+        .work-item {
+            width: 60vw;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .work-title-card {
+            width: 30vw;
+            flex-shrink: 0;
+            padding-right: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .work-item {
+                width: 45vw;
+            }
+
+            .work-title-card {
+                width: 25vw;
+            }
+        }
+
+        .project-img-wrap {
+            width: 100%;
+            height: 60vh;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            background: #eee;
+        }
+
+        .project-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .work-item:hover .project-img-wrap img {
+            transform: scale(1.1);
+        }
+
+        /* --- CONTACT FORM --- */
+        .contact-input {
+            width: 100%;
+            background: transparent;
+            border-bottom: 1px solid #ccc;
+            padding: 15px 0;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-input:focus {
+            border-bottom-color: #000;
+        }
+
+        .contact-input::placeholder {
+            color: #999;
+        }
+
+        /* 3D CANVAS */
+        #webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* CURSOR */
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-outline {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        /* UTILS */
+        .mask-text {
+            overflow: hidden;
+        }
+
+        .mask-text span {
+            display: block;
+            transform: translateY(100%);
+        }
+
+        .reveal-img-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .reveal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fdfbf7;
+            z-index: 2;
+        }
+
+        .about-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.2);
+            object-position: top;
+            transition: transform 1.5s ease-out;
+        }
+
+        /* =========================================
+           AGRESSIVE MOBILE RESPONSIVENESS FIXES
+           ========================================= */
+        @media (max-width: 768px) {
+
+            /* General */
+            body {
+                cursor: auto;
+            }
+
+            .cursor-dot,
+            .cursor-outline {
+                display: none !important;
+            }
+
+            /* Typography Scaling */
+            .mask-text h1 {
+                font-size: 18vw !important;
+                line-height: 1 !important;
+            }
+
+            h2 {
+                font-size: 2.5rem !important;
+                line-height: 1.2 !important;
+            }
+
+            h3 {
+                font-size: 1.5rem !important;
+            }
+
+            /* Spacing Resets */
+            .py-32 {
+                padding-top: 4rem !important;
+                padding-bottom: 4rem !important;
+            }
+
+            .px-20 {
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+            }
+
+            .gap-16 {
+                gap: 3rem !important;
+            }
+
+            /* Layout Fixes */
+            .md\:col-span-5,
+            .md\:col-span-7 {
+                grid-column: span 12 / span 12 !important;
+            }
+
+            .flex-col.md\:flex-row {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            /* Skill Cards Shrink */
+            .p-10,
+            .lg\:p-14,
+            .lg\:p-12 {
+                padding: 1.5rem !important;
+                border-radius: 1.5rem !important;
+            }
+
+            .text-\[20rem\],
+            .text-\[15rem\],
+            .text-\[18rem\],
+            .text-\[12rem\] {
+                font-size: 8rem !important;
+                right: -2rem !important;
+                top: -2rem !important;
+            }
+
+            .w-20,
+            .h-20 {
+                width: 3.5rem !important;
+                height: 3.5rem !important;
+                font-size: 1.5rem !important;
+            }
+
+            .mb-10 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            /* Work Section Fixes */
+            .work-container {
+                gap: 2rem !important;
+                padding-left: 5vw !important;
+                padding-right: 5vw !important;
+            }
+
+            .work-item {
+                width: 85vw !important;
+            }
+
+            .work-title-card {
+                width: 85vw !important;
+                padding-right: 0 !important;
+            }
+
+            .project-img-wrap {
+                height: 40vh !important;
+                border-radius: 16px !important;
+            }
+
+            /* Navbar & Loader */
+            nav {
+                padding: 15px 20px !important;
+            }
+
+            nav.scrolled {
+                width: 95% !important;
+                padding: 10px 20px !important;
+            }
+
+            .atom-spinner {
+                width: 120px !important;
+                height: 120px !important;
+            }
+
+            .counter {
+                font-size: 1.5rem !important;
+            }
+
+            /* Form Fixes */
+            .tilt-card {
+                transform: none !important;
+                padding: 1.5rem !important;
+            }
+
+            .tilt-content {
+                transform: none !important;
+            }
+
+            .gap-20 {
+                gap: 3rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="loader-container">
+        <div class="atom-spinner">
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="orbit"></div>
+            <div class="counter">0%</div>
+        </div>
+        <div class="loading-text">INITIALIZING SYSTEM...</div>
+    </div>
+
+    <canvas id="webgl"></canvas>
+
+    <nav class="flex justify-between items-center text-black opacity-0" id="nav">
+        <div class="text-xl font-bold uppercase tracking-wider">Krushik<span class="text-orange-500">.</span></div>
+        <div class="hidden md:flex gap-12 text-xs font-bold uppercase tracking-widest text-gray-600">
+            <a href="#about" class="nav-link hover:text-black transition cursor-pointer">About</a>
+            <a href="#skills" class="nav-link hover:text-black transition cursor-pointer">Skills</a>
+            <a href="#education" class="nav-link hover:text-black transition cursor-pointer">Education</a>
+            <a href="#work" class="nav-link hover:text-black transition cursor-pointer">Work</a>
+        </div>
+        <a href="#contact-section"
+            class="nav-link px-6 py-2 border border-black rounded-full text-xs font-bold uppercase hover:bg-black hover:text-white transition text-black cursor-pointer">Let's
+            Talk</a>
+    </nav>
+
+    <section class="min-h-screen flex flex-col justify-center items-center text-center px-4 ">
+        <div class="mask-text">
+            <h1 class="display-font text-6xl md:text-[9rem] leading-[0.85] font-bold tracking-tighter">
+                WEB
+            </h1>
+        </div>
+        <div class="mask-text">
+            <h1
+                class="display-font text-6xl md:text-[9rem] leading-[0.85] font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-400">
+                CRAFTSMAN
+            </h1>
+        </div>
+        <p class="mt-8 text-lg text-gray-500 max-w-md mx-auto opacity-0 hero-elem font-medium">
+            Turning complex ideas into smooth, interactive digital experiences.
+        </p>
+        <div class="mt-12 opacity-0 hero-elem">
+            <a href="#work"
+                class="nav-link px-8 py-4 bg-black text-white rounded-full uppercase text-xs font-bold tracking-widest hover:scale-105 transition duration-300 shadow-xl cursor-pointer">
+                View Works
+            </a>
+        </div>
+    </section>
+
+    <section id="about" class="py-32 px-6 md:px-20 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-12 gap-16 items-center">
+            <div class="md:col-span-5 relative z-10">
+                <h4 class="text-xs font-bold uppercase tracking-widest mb-6 text-gray-400">Identity</h4>
+                <h2 class="text-5xl md:text-6xl font-bold leading-tight mb-8">
+                    Coding with <br> <span class="italic font-serif font-light text-gray-500">Precision.</span>
+                </h2>
+                <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                    I am Krushik Rakholiya, an IT Engineer & MERN Stack specialist. I build digital ecosystems that are
+                    fast, secure, and beautiful.
+                </p>
+                <div class="flex gap-12 border-t border-black/10 pt-8">
+                    <div>
+                        <div class="text-4xl font-bold mb-1">02+</div>
+                        <div class="text-xs uppercase text-gray-500 font-bold tracking-wider">Years Exp</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold mb-1">20+</div>
+                        <div class="text-xs uppercase text-gray-500 font-bold tracking-wider">Projects</div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-7">
+                <div class="reveal-img-container aspect-[3/4] md:aspect-[4/3] shadow-2xl">
+                    <div class="reveal-overlay"></div>
+                    <img src="images/my self.png"
+                        onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000'"
+                        class="about-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-32  z-10">
+        <div class="max-w-7xl mx-auto px-6 md:px-20 z-20">
+
+            <div
+                class="mb-16 flex flex-col md:flex-row justify-between items-end gap-8 border-b-2 border-black/10 pb-8">
+                <div>
+                    <span class="text-orange-600 font-bold tracking-[0.3em] uppercase text-sm mb-4 block">The
+                        Arsenal</span>
+                    <h2
+                        class="text-5xl md:text-7xl font-black text-gray-900 display-font leading-none uppercase tracking-tight">
+                        Technical<br>Prowess.</h2>
+                </div>
+                <p class="text-gray-600 text-xl font-medium max-w-sm">
+                    A curated stack of modern technologies tailored for high-performance web applications.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div
+                    class="col-span-1 md:col-span-2 bg-white rounded-[2.5rem] p-10 lg:p-14 border border-gray-200 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-reactjs-line text-[20rem] text-blue-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-20 h-20 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-4xl mb-10 border border-blue-100 shadow-sm">
+                            <i class="ri-reactjs-fill"></i>
+                        </div>
+                        <h3 class="text-4xl md:text-5xl font-black mb-4 text-gray-900">Frontend Core</h3>
+                        <p class="text-gray-500 text-xl mb-10 max-w-md">Building dynamic, reactive, and highly scalable
+                            user interfaces.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">HTML/HTML5</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">CSS/CSS3</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">Media
+                                Queries</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">Bootstrap</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">Tailwind</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">React.js</span>
+                            <span
+                                class="bg-gray-100 border border-gray-200 text-black px-5 py-2 rounded-full font-bold text-sm tracking-wide">Next.js</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="col-span-1 bg-black text-white rounded-[2.5rem] p-10 lg:p-12 shadow-2xl hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between relative overflow-hidden group">
+                    <div
+                        class="absolute  -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-server-line text-[15rem] text-green-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-16 h-16 bg-white/10 text-green-400 rounded-2xl flex items-center justify-center text-3xl mb-8 border border-white/10 backdrop-blur-sm">
+                            <i class="ri-server-line"></i>
+                        </div>
+                        <h3 class="text-3xl font-black mb-3">Backend</h3>
+                        <p class="text-gray-400 text-lg mb-8">Robust server logic and API architecture.</p>
+                    </div>
+                    <div class="relative z-10 flex gap-3">
+                        <span
+                            class="bg-white/10 border border-white/20 px-5 py-2 rounded-full font-bold text-sm tracking-wide">Node.js</span>
+                    </div>
+                </div>
+
+                <div
+                    class="col-span-1 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-[2.5rem] p-10 lg:p-12 shadow-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-javascript-line text-[18rem] text-white"></i>
+                    </div>
+                    <div
+                        class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl mb-8 backdrop-blur-sm border border-white/20">
+                        <i class="ri-javascript-line"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-3">Programming languages</h3>
+                    <p class="text-purple-100 font-medium mb-8">Languages and frameworks used in development.</p>
+                    <span
+                        class="inline-block bg-white text-gray-600 px-5 py-2 rounded-full font-bold text-sm uppercase tracking-widest">C++</span>
+                    <span
+                        class="inline-block bg-white text-gray-600 px-5 py-2 rounded-full font-bold text-sm uppercase tracking-widest">JavaScript</span>
+                </div>
+
+                <div
+                    class="col-span-1 bg-white rounded-[2.5rem] p-10 lg:p-12 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div
+                        class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-3xl mb-8 border border-green-100">
+                        <i class="ri-database-2-line"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-3 text-gray-900">Database</h3>
+                    <p class="text-gray-500 font-medium mb-8">NoSQL architecture and data modeling.</p>
+                    <span
+                        class="inline-block bg-green-100 text-green-700 px-5 py-2 rounded-full font-bold text-sm uppercase tracking-widest">MongoDB</span>
+                </div>
+
+                <div
+                    class="col-span-1 bg-white rounded-[2.5rem] p-10 lg:p-12 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div
+                        class="w-16 h-16 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center text-3xl mb-8 border border-pink-100">
+                        <i class="ri-tools-line"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-3 text-gray-900">Tools</h3>
+                    <p class="text-gray-500 font-medium mb-8">Development tools and productivity software.</p>
+                    <span
+                        class="inline-block bg-pink-100 text-pink-700 px-5 py-2 mb-1 rounded-full font-bold text-sm uppercase tracking-widest">Vs
+                        code</span>
+                    <span
+                        class="inline-block bg-pink-100 text-pink-700 px-5 py-2 rounded-full font-bold text-sm uppercase tracking-widest">Windsurf</span>
+                    <span
+                        class="inline-block bg-pink-100 text-pink-700 px-5 py-2 rounded-full font-bold text-sm uppercase tracking-widest">Cursor</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="education" class="py-32 relative z-10 bg-transparent">
+        <div class="max-w-7xl mx-auto px-6 md:px-20 relative z-20">
+            <div
+                class="mb-16 flex flex-col md:flex-row justify-between items-end gap-8 border-b-2 border-black/10 pb-8">
+                <div>
+                    <span class="text-orange-600 font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Academic
+                        Path</span>
+                    <h2
+                        class="text-5xl md:text-7xl font-black text-gray-900 display-font leading-none uppercase tracking-tight">
+                        Education &<br>Learning.</h2>
+                </div>
+                <p class="text-gray-600 text-xl font-medium max-w-sm">
+                    My continuous learning journey and academic foundation in software development.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                    class="bg-white rounded-[2.5rem] p-10 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-macbook-line text-[12rem] text-purple-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-purple-100 shadow-sm">
+                            <i class="ri-macbook-line"></i>
+                        </div>
+                        <span
+                            class="text-purple-600 font-bold tracking-widest text-xs uppercase mb-2 block">Present</span>
+                        <h3 class="text-2xl font-black mb-3 text-gray-900">Master of Computer Applications</h3>
+                        <p class="text-gray-500 text-sm mb-4 font-semibold leading-snug">Surendranagar University</p>
+                        <p class="text-gray-600 text-sm font-medium">Pursuing advanced studies in software engineering,
+                            modern computing architectures, and IT solutions.</p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-[2.5rem] p-10 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-graduation-cap-line text-[12rem] text-orange-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-orange-100 shadow-sm">
+                            <i class="ri-code-s-slash-line"></i>
+                        </div>
+                        <span
+                            class="text-orange-600 font-bold tracking-widest text-xs uppercase mb-2 block">Present</span>
+                        <h3 class="text-2xl font-black mb-3 text-gray-900">Full Stack Development</h3>
+                        <p class="text-gray-500 text-sm mb-4 font-semibold leading-snug">Red & White Skills Education
+                        </p>
+                        <p class="text-gray-600 text-sm font-medium">Mastering the MERN stack, advanced web
+                            architectures, and building production-ready applications.</p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-[2.5rem] p-10 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-book-open-line text-[12rem] text-blue-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-blue-100 shadow-sm">
+                            <i class="ri-book-read-line"></i>
+                        </div>
+                        <span class="text-blue-600 font-bold tracking-widest text-xs uppercase mb-2 block">2021 -
+                            2024</span>
+                        <h3 class="text-2xl font-black mb-3 text-gray-900">Bachelor of Computer Applications</h3>
+                        <p class="text-gray-500 text-sm mb-4 font-semibold leading-snug">Shastri Swami Shree
+                            Dharmajivandasji Institute of Information & Technology</p>
+                        <p class="text-gray-600 text-sm font-medium">Built a strong foundation in computer science,
+                            software engineering, and database management.</p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white rounded-[2.5rem] p-10 border border-gray-200 shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group">
+                    <div
+                        class="absolute -top-10 -right-10 p-10 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                        <i class="ri-building-4-line text-[12rem] text-green-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div
+                            class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-2xl mb-6 border border-green-100 shadow-sm">
+                            <i class="ri-building-line"></i>
+                        </div>
+                        <span class="text-green-600 font-bold tracking-widest text-xs uppercase mb-2 block">2019 -
+                            2021</span>
+                        <h3 class="text-2xl font-black mb-3 text-gray-900">Higher Secondary</h3>
+                        <p class="text-gray-500 text-sm mb-4 font-semibold leading-snug">Shree Swaminarayan Gurukul -
+                            Visavadar</p>
+                        <p class="text-gray-600 text-sm font-medium">Completed STD 10th (March 2019) and STD 12th (March
+                            2021).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="work" class="work-section bg-white">
+        <div class="work-container">
+            <div class="work-title-card flex flex-col justify-center">
+                <h2 class="text-6xl md:text-8xl font-bold display-font text-black">Selected <br> Works</h2>
+                <p class="text-gray-400 text-xs uppercase tracking-widest mt-4">Scroll Down to Explore &rarr;</p>
+            </div>
+
+            <div class="work-item">
+                <a href="https://mrkrushik.github.io/GYM-project/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/GYM.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">FitHub Web</h3>
+                            <p class="text-gray-500 mt-2">Fintech Dashboard • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">01</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="work-item">
+                <a href="https://mrkrushik.github.io/Eatwell-project/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/eatwell.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">EatWell</h3>
+                            <p class="text-gray-500 mt-2">Healthy Food • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">02</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="work-item">
+                <a href="https://mrkrushik.github.io/Restorunt-web/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/resto.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Restorunt</h3>
+                            <p class="text-gray-500 mt-2">Food Delivery • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">03</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="work-item">
+                <a href="https://mrkrushik.github.io/Bizzpage-website//" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/bizpage.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">BizzPage</h3>
+                            <p class="text-gray-500 mt-2">Agency Portfolio • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">04</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="work-item">
+                <a href="https://mrkrushik.github.io/Grossary-project/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/grocery.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Grocery</h3>
+                            <p class="text-gray-500 mt-2">Agency Portfolio • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">05</span>
+                    </div>
+                </a>
+            </div>
+
+             <div class="work-item">
+                <a href="https://mrkrushik.github.io/farming-pr/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/farming.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Farming</h3>
+                            <p class="text-gray-500 mt-2">Agency Portfolio • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">06</span>
+                    </div>
+                </a>
+            </div>
+
+             <div class="work-item">
+                <a href="https://mrkrushik.github.io/PIZZA/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/pizza.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Pizza</h3>
+                            <p class="text-gray-500 mt-2">foody working • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">07</span>
+                    </div>
+                </a>
+            </div>
+
+             <div class="work-item">
+                <a href="https://mrkrushik.github.io/Project-Car/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/car.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Car</h3>
+                            <p class="text-gray-500 mt-2">working in dubai • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">08</span>
+                    </div>
+                </a>
+            </div>
+
+             <div class="work-item">
+                <a href="https://mrkrushik.github.io/KITCHEN-PROJECT/" target="_blank" class="block w-full">
+                    <div class="project-img-wrap"><img src="images/eating.png"
+                            onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000'">
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <div>
+                            <h3 class="text-4xl font-bold font-['Clash_Display']">Kitchen</h3>
+                            <p class="text-gray-500 mt-2">Eating to web • Webflow</p>
+                        </div>
+                        <span class="text-4xl font-bold text-gray-200">09</span>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact-section" class="py-32 px-6 md:px-20 bg-white relative">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-20">
+            <div class="flex flex-col justify-center">
+                <h4 class="text-xs font-bold uppercase tracking-widest mb-6 text-gray-400">Collaboration</h4>
+                <h2 class="text-5xl md:text-7xl font-bold leading-tight mb-8">Let's build <br> something <span
+                        class="text-orange-600">Great.</span></h2>
+                <div class="space-y-4">
+                    <a href="mailto:itzmekrushik90999@gmail.com"
+                        class="block text-xl font-bold hover:text-orange-600 transition">itzmekrushik90999@gmail.com</a>
+                    <p class="text-xl font-bold">+91 9099989606</p>
+                </div>
+            </div>
+            <div class="tilt-card" onmousemove="tilt(event, this)" onmouseleave="resetTilt(this)">
+                <div class="tilt-content w-full items-start">
+                    <h3 class="text-2xl font-bold mb-8">Send a Message</h3>
+                    <form class="w-full space-y-8">
+                        <input type="text" placeholder="Your Name" class="contact-input">
+                        <input type="email" placeholder="Your Email" class="contact-input">
+                        <textarea rows="3" placeholder="Tell me about your project"
+                            class="contact-input resize-none"></textarea>
+                        <button
+                            class="px-8 py-4 bg-black text-white rounded-full font-bold uppercase tracking-widest hover:bg-orange-600 transition w-full mt-4">Send
+                            Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-[#111] text-white py-8 px-6 md:px-20 flex justify-between items-center">
+        <div class="font-bold tracking-widest">KRUSHIK.DEV</div>
+        <div class="flex gap-8 text-sm uppercase tracking-widest text-gray-500">
+            <a href="https://www.linkedin.com/in/krushik-rakholiya-6b379b348" target="_blank" class="hover:text-white transition">LinkedIn</a>
+            <a href="https://github.com/MrKrushik" target="_blank" class="hover:text-white transition">GitHub</a>
+            <a href="https://www.instagram.com/km_rakholiya_0_0_0_5/" target="_blank" class="hover:text-white transition">Instagram</a>
+        </div>
+        <div class="text-xs text-gray-600">© 2024 Surat, India</div>
+    </footer>
+
+    <script>
+        // --- 1. INITIALIZE LENIS ---
+        let lenis;
+        const initLenis = () => {
+            lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+        };
+
+        // --- 2. SMOOTH ANCHOR LINKS ---
+        document.querySelectorAll('.nav-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) lenis.scrollTo(target, { duration: 1.5 });
+            });
+        });
+
+        // --- 3. NAVBAR SCROLL EFFECT ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('nav');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- 4. CUSTOM CURSOR ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        window.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
+            cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        });
+
+        // --- 5. LOADER LOGIC ---
+        function startLoader() {
+            let count = 0;
+            let counterElement = document.querySelector('.counter');
+            let loadingText = document.querySelector('.loading-text');
+
+            let interval = setInterval(() => {
+                count += Math.floor(Math.random() * 4) + 1;
+
+                if (count >= 100) {
+                    count = 100;
+                    clearInterval(interval);
+                    loadingText.innerText = "SYSTEM READY";
+                    loadingText.style.color = "var(--accent)";
+                    setTimeout(revealSite, 400);
+                } else if (count > 70) {
+                    loadingText.innerText = "RENDERING ASSETS...";
+                } else if (count > 30) {
+                    loadingText.innerText = "BUILDING 3D SCENE...";
+                }
+
+                counterElement.innerText = count + "%";
+            }, 35);
+
+            function revealSite() {
+                const tl = gsap.timeline();
+                tl.to(".atom-spinner", { scale: 1.5, opacity: 0, duration: 0.5, ease: "power2.in" })
+                    .to(".loading-text", { opacity: 0, duration: 0.3 }, "-=0.3")
+                    .to(".loader-container", { y: "-100%", duration: 1.2, ease: "power4.inOut" }, "-=0.2")
+                    .to("#webgl", { opacity: 1, duration: 1 }, "-=0.5")
+                    .to("#nav", { opacity: 1, duration: 1 }, "-=0.5")
+                    .to(".mask-text span", { y: "0%", duration: 1.2, stagger: 0.1, ease: "power4.out" }, "-=0.5")
+                    .to(".hero-elem", { opacity: 1, duration: 1 }, "-=0.8")
+                    .call(initLenis);
+            }
+        }
+        startLoader();
+
+        // --- 6. 3D TILT LOGIC ---
+        function tilt(e, card) {
+            // Disable on mobile/touch screens safely
+            if (window.innerWidth <= 768) return;
+
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            const rotateX = ((y - rect.height / 2) / rect.height / 2) * -15;
+            const rotateY = ((x - rect.width / 2) / rect.width / 2) * 15;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        }
+        function resetTilt(card) { card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`; }
+
+        // --- 7. ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Horizontal Scroll
+        const workContainer = document.querySelector(".work-container");
+        if (workContainer) {
+            gsap.to(workContainer, {
+                x: () => -(workContainer.scrollWidth - window.innerWidth),
+                ease: "none",
+                scrollTrigger: { trigger: ".work-section", pin: true, scrub: 1, end: () => "+=" + workContainer.scrollWidth }
+            });
+        }
+
+        // Image Reveal
+        gsap.to(".reveal-overlay", { height: 0, duration: 1.5, ease: "power2.inOut", scrollTrigger: { trigger: "#about", start: "top 60%" } });
+        gsap.to(".about-img", { scale: 1, duration: 1.5, ease: "power2.out", scrollTrigger: { trigger: "#about", start: "top 60%" } });
+
+        // --- 8. THE SWIRLING SPACE VORTEX ---
+        try {
+            // Check if THREE is defined to prevent errors
+            if (typeof THREE !== 'undefined') {
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xfdfbf7);
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#webgl'), antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                const particleCount = 4000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+
+                const colorOrange = new THREE.Color(0xFF4D00); // Accent
+                const colorDark = new THREE.Color(0x1a1a1a);   // Dark grey
+
+                // Create Spiral Galaxy math
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    const radius = Math.random() * 40;
+                    const theta = radius * 0.3 + (Math.random() * Math.PI * 2);
+
+                    positions[i] = Math.cos(theta) * radius;
+                    positions[i + 1] = (Math.random() - 0.5) * (40 / (radius + 1));
+                    positions[i + 2] = Math.sin(theta) * radius;
+
+                    const mixedColor = colorOrange.clone().lerp(colorDark, Math.random() * 0.8);
+                    colors[i] = mixedColor.r;
+                    colors[i + 1] = mixedColor.g;
+                    colors[i + 2] = mixedColor.b;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 0.15,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const vortex = new THREE.Points(geometry, material);
+
+                vortex.rotation.x = Math.PI / 6;
+                scene.add(vortex);
+
+                camera.position.set(0, 10, 40);
+
+                let mouseX = 0, mouseY = 0;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX - window.innerWidth / 2) * 0.002;
+                    mouseY = (e.clientY - window.innerHeight / 2) * 0.002;
+                });
+
+                function animate() {
+                    requestAnimationFrame(animate);
+
+                    vortex.rotation.y -= 0.002;
+                    vortex.rotation.z += (mouseX - vortex.rotation.z) * 0.05;
+                    vortex.rotation.x += (Math.PI / 6 + mouseY - vortex.rotation.x) * 0.05;
+
+                    renderer.render(scene, camera);
+                }
+                animate();
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            } else {
+                console.log("THREE.js library not loaded yet.");
+            }
+        } catch (e) { console.log("3D disabled"); }
+    </script>
+</body>
+
+</html>
